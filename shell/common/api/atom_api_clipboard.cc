@@ -78,6 +78,27 @@ void Clipboard::WriteBuffer(const std::string& format,
       mojo_base::BigBuffer(payload_span));
 }
 
+void Clipboard::WriteBuffers(
+    const std::vector<std::tuple<std::string, v8::Local<v8::Value>>> buffers,
+    gin_helper::Arguments* args) {
+  ui::ScopedClipboardWriter writer(GetClipboardBuffer(args));
+
+  for (size_t i = 0; i < buffers.size(); i++) {
+    if (!node::Buffer::HasInstance(std::get<1>(buffers[i]))) {
+      args->ThrowError("buffer must be a node Buffer");
+      return;
+    }
+    base::span<const uint8_t> payload_span(
+        reinterpret_cast<const uint8_t*>(
+            node::Buffer::Data(std::get<1>(buffers[i]))),
+        node::Buffer::Length(std::get<1>(buffers[i])));
+    writer.WriteData(base::UTF8ToUTF16(ui::ClipboardFormatType::GetType(
+                                           std::get<0>(buffers[i]))
+                                           .Serialize()),
+                     mojo_base::BigBuffer(payload_span));
+  }
+}
+
 void Clipboard::Write(const gin_helper::Dictionary& data,
                       gin_helper::Arguments* args) {
   ui::ScopedClipboardWriter writer(GetClipboardBuffer(args));
@@ -237,6 +258,7 @@ void Initialize(v8::Local<v8::Object> exports,
   dict.SetMethod("writeFindText", &electron::api::Clipboard::WriteFindText);
   dict.SetMethod("readBuffer", &electron::api::Clipboard::ReadBuffer);
   dict.SetMethod("writeBuffer", &electron::api::Clipboard::WriteBuffer);
+  dict.SetMethod("_writeBuffers", &electron::api::Clipboard::WriteBuffers);
   dict.SetMethod("clear", &electron::api::Clipboard::Clear);
 }
 

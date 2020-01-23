@@ -103,6 +103,33 @@ struct Converter<v8::Local<v8::String>> {
   }
 };
 
+template <typename T, typename Q>
+struct Converter<std::tuple<T, Q>> {
+  static bool FromV8(v8::Isolate* isolate,
+                     v8::Local<v8::Value> val,
+                     std::tuple<T, Q>* out) {
+    std::vector<v8::Local<v8::Value>> vect;
+    if (!gin::ConvertFromV8(isolate, val, &vect)) {
+      return false;
+    }
+    if (vect.size() != 2) {
+      return false;
+    }
+    T first;
+    if (!gin::ConvertFromV8(isolate, vect[0], &first)) {
+      return false;
+    }
+
+    Q second;
+    if (!gin::ConvertFromV8(isolate, vect[1], &second)) {
+      return false;
+    }
+
+    *out = std::make_tuple(std::move(first), std::move(second));
+    return true;
+  }
+};
+
 template <typename T>
 struct Converter<std::set<T>> {
   static v8::Local<v8::Value> ToV8(v8::Isolate* isolate,
