@@ -130,6 +130,7 @@
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 
@@ -2853,10 +2854,16 @@ void WebContents::StartDrag(const gin_helper::Dictionary& item,
     return;
   }
 
+  int dropOperation;
+  if (!item.Get("dropOperation", &dropOperation)) {
+    dropOperation = ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK;
+  }
+
   // Start dragging.
   if (!files.empty()) {
     base::CurrentThread::ScopedNestableTaskAllower allow;
-    DragFileItems(files, icon->image(), web_contents()->GetNativeView());
+    DragFileItems(files, icon->image(), web_contents()->GetNativeView(),
+                  dropOperation);
   } else {
     gin_helper::ErrorThrower(args->isolate())
         .ThrowError("Must specify either 'file' or 'files' option");

@@ -29,7 +29,8 @@ void AddFilesToPasteboard(NSPasteboard* pasteboard,
 
 void DragFileItems(const std::vector<base::FilePath>& files,
                    const gfx::Image& icon,
-                   gfx::NativeView view) {
+                   gfx::NativeView view,
+                   int dropOperation) {
   NSPasteboard* pasteboard = [NSPasteboard pasteboardWithName:NSDragPboard];
   AddFilesToPasteboard(pasteboard, files);
 

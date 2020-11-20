@@ -21,7 +21,8 @@ namespace electron {
 
 void DragFileItems(const std::vector<base::FilePath>& files,
                    const gfx::Image& icon,
-                   gfx::NativeView view);
+                   gfx::NativeView view,
+                   int dropOperation);
 
 std::vector<gfx::Rect> CalculateNonDraggableRegions(
     std::unique_ptr<SkRegion> draggable,
