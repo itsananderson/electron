@@ -32,7 +32,7 @@ There are several major changes from our 1.x strategy outlined below. Each chang
 2. Introduction of semver-compliant `-beta` tags
 3. Introduction of [conventional commit messages](https://conventionalcommits.org/)
 4. Well-defined stabilization branches
-5. The `master` branch is versionless; only stabilization branches contain version information
+5. The `main` branch is versionless; only stabilization branches contain version information
 
 We will cover in detail how git branching works, how npm tagging works, what developers should expect to see, and how one can backport changes.
 
@@ -52,7 +52,7 @@ Note that most Chromium updates will be considered breaking. Fixes that can be b
 
 # Stabilization Branches
 
-Stabilization branches are branches that run parallel to master, taking in only cherry-picked commits that are related to security or stability. These branches are never merged back to master.
+Stabilization branches are branches that run parallel to `main`, taking in only cherry-picked commits that are related to security or stability. These branches are never merged back to `main`.
 
 ![Stabilization Branches](../images/versioning-sketch-1.png)
 
@@ -105,11 +105,11 @@ An example lifecycle in pictures:
 
 * A new release branch is created that includes the latest set of features. It is published as `2.0.0-beta.1`.
 ![New Release Branch](../images/versioning-sketch-3.png)
-* A bug fix comes into master that can be backported to the release branch. The patch is applied, and a new beta is published as `2.0.0-beta.2`.
+* A bug fix comes into `main` that can be backported to the release branch. The patch is applied, and a new beta is published as `2.0.0-beta.2`.
 ![Bugfix Backport to Beta](../images/versioning-sketch-4.png)
 * The beta is considered _generally stable_ and it is published again as a non-beta under `2.0.0`.
 ![Beta to Stable](../images/versioning-sketch-5.png)
-* Later, a zero-day exploit is revealed and a fix is applied to master. We backport the fix to the `2-0-x` line and release `2.0.1`.
+* Later, a zero-day exploit is revealed and a fix is applied to `main`. We backport the fix to the `2-0-x` line and release `2.0.1`.
 ![Security Backports](../images/versioning-sketch-6.png)
 
 A few examples of how various SemVer ranges will pick up new releases:
@@ -118,7 +118,7 @@ A few examples of how various SemVer ranges will pick up new releases:
 
 # Missing Features: Alphas
 
-Our strategy has a few tradeoffs, which for now we feel are appropriate. Most importantly that new features in master may take a while before reaching a stable release line. If you want to try a new feature immediately, you will have to build Electron yourself.
+Our strategy has a few tradeoffs, which for now we feel are appropriate. Most importantly that new features in `main` may take a while before reaching a stable release line. If you want to try a new feature immediately, you will have to build Electron yourself.
 
 As a future consideration, we may introduce one or both of the following:
 
@@ -143,9 +143,9 @@ We seek to increase clarity at all levels of the update and releases process. St
 * We allow squashing of commits, provided that the squashed message adheres to the above message format.
 * It is acceptable for some commits in a pull request to not include a semantic prefix, as long as the pull request title contains a meaningful encompassing semantic message.
 
-# Versioned `master`
+# Versioned `main`
 
-* The `master` branch will always contain the next major version `X.0.0-nightly.DATE` in its `package.json`
-* Release branches are never merged back to master
+* The `main` branch will always contain the next major version `X.0.0-nightly.DATE` in its `package.json`
+* Release branches are never merged back to the `main` branch
 * Release branches _do_ contain the correct version in their `package.json`
-* As soon as a release branch is cut for a major, master must be bumped to the next major.  I.e. `master` is always versioned as the next theoretical release branch
+* As soon as a release branch is cut for a major, the `main` branch must be bumped to the next major.  I.e. `main` is always versioned as the next theoretical release branch
