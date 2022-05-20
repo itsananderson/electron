@@ -909,8 +909,10 @@ this purpose.
 
 Returns:
 
-* `isMainFrame` boolean
 * `url` string
+* `isMainFrame` boolean
+* `frameProcessId` Integer
+* `frameRoutingId` Integer
 
 Emitted when an in-page navigation happened.
 
