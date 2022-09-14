@@ -57,10 +57,23 @@ NotifyIcon::NotifyIcon(NotifyIconHost* host,
   icon_data.uFlags |= NIF_MESSAGE;
   icon_data.uCallbackMessage = message_id_;
   BOOL result = Shell_NotifyIcon(NIM_ADD, &icon_data);
-  // This can happen if the explorer process isn't running when we try to
-  // create the icon for some reason (for example, at startup).
-  if (!result)
-    LOG(WARNING) << "Unable to create status tray icon.";
+  if (!result) {
+    if (is_using_guid_) {
+      // If a previous process failed to clean up the icon with this GUID (e.g.
+      // due to a crash), trying to add the icon again will fail. Calling
+      // ResetIcon deletes the old icon if it exists, and then re-creates it,
+      // allowing this process to take control. Most importantly, it ensures
+      // that this process is registered as the message listener so that it can
+      // respond to user interactions.
+      LOG(WARNING) << "Unable to create status tray icon using GUID. "
+                      "Attempting to reset and re-create.";
+      ResetIcon();
+    } else {
+      // Otherwise this can happen if the explorer process isn't running when we
+      // try to create the icon for some reason (for example, at startup).
+      LOG(WARNING) << "Unable to create status tray icon.";
+    }
+  }
 }
 
 NotifyIcon::~NotifyIcon() {
